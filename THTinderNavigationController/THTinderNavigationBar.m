@@ -48,6 +48,9 @@
             [self updateItemView:itemView withRatio:0.0];
         }
     }];
+    
+    // Dirty hack
+    [self setContentOffset:self.contentOffset];
 }
 
 - (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture
