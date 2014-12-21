@@ -17,6 +17,8 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 @property (nonatomic, strong) NSArray *paggedViewControllers;
 @property (nonatomic, strong) NSArray *navbarItemViews;
 
+@property (nonatomic, assign) BOOL scrollEnabled;
+
 - (instancetype)initWithLeftViewController:(UIViewController *)leftViewController;
 
 - (instancetype)initWithRightViewController:(UIViewController *)rightViewController;

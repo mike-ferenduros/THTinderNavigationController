@@ -73,6 +73,14 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 #pragma mark - Propertys
 
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+    self.paggingScrollView.scrollEnabled = scrollEnabled;
+}
+
+- (BOOL)scrollEnabled {
+    return self.paggingScrollView.scrollEnabled;
+}
+
 - (UIView *)centerContainerView {
     if (!_centerContainerView) {
         _centerContainerView = [[UIView alloc] initWithFrame:self.view.bounds];
