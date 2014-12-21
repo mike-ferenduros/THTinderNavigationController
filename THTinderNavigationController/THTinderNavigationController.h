@@ -12,6 +12,7 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 
 @interface THTinderNavigationController : UIViewController
 
+@property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, copy) THDidChangedPageBlock didChangedPageCompleted;
 
 @property (nonatomic, strong) NSArray *paggedViewControllers;

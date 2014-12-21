@@ -16,7 +16,6 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 @interface THTinderNavigationController () <UIScrollViewDelegate>
 
-@property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, strong) UIScrollView *paggingScrollView;
 
 @property (nonatomic, strong) THTinderNavigationBar *paggingNavbar;
