@@ -12,10 +12,8 @@
 
 #define kXHLabelBaseTag 1000
 
-#define MARGIN_LEFT 145
 #define WIDTH self.bounds.size.width
 #define IMAGESIZE 30
-#define STEP 130
 #define SPEED 2.45
 #define Y_POSITION 28
 
