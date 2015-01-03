@@ -11,11 +11,12 @@
 #define kXHiPad ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
 #define kXHLabelBaseTag 1000
-
 #define WIDTH self.bounds.size.width
 #define IMAGESIZE 30
 #define SPEED 2.45
 #define Y_POSITION 28
+
+static CGFloat MARGIN = 15.0;
 
 @interface THTinderNavigationBar ()
 
@@ -32,9 +33,8 @@
     
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
         
-        //dyanmically get the width with 15px side margins
-        CGFloat width = (WIDTH - 30);
-        CGFloat step = (width / 2 - 15) * idx + 15;
+        CGFloat width = (WIDTH - MARGIN * 2);
+        CGFloat step = (width / 2 - MARGIN) * idx + MARGIN;
         
         CGRect itemViewFrame = CGRectMake(step, Y_POSITION, IMAGESIZE, IMAGESIZE);
         itemView.hidden = NO;
@@ -76,9 +76,8 @@
     
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
         
-        //dyanmically get the width with 15px side margins
-        CGFloat width = (WIDTH - 30);
-        CGFloat step = (width / 2 - 15) * idx + 15;
+        CGFloat width = (WIDTH - MARGIN * 2);
+        CGFloat step = (width / 2 - MARGIN) * idx + MARGIN;
         
         CGRect itemViewFrame = itemView.frame;
         itemViewFrame.origin.x = step - (xOffset - normalWidth) / SPEED;
