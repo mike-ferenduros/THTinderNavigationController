@@ -72,6 +72,14 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 #pragma mark - Propertys
 
+- (void)setScrollViewInsets:(UIEdgeInsets)scrollViewInsets {
+    self.paggingScrollView.contentInset = scrollViewInsets;
+}
+
+- (UIEdgeInsets)scrollViewInsets {
+    return self.paggingScrollView.contentInset;
+}
+
 - (void)setShouldChangePage:(BOOL (^)(NSInteger))shouldChangePage {
     self.paggingNavbar.shouldChangePage = shouldChangePage;
 }

@@ -15,6 +15,8 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 @property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, copy) THDidChangedPageBlock didChangedPageCompleted;
 
+@property (nonatomic, assign) UIEdgeInsets scrollViewInsets;
+
 @property (nonatomic, copy) BOOL (^shouldChangePage)(NSInteger page);
 
 @property (nonatomic, strong) NSArray *paggedViewControllers;
