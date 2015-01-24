@@ -72,6 +72,14 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 #pragma mark - Propertys
 
+- (void)setShouldChangePage:(BOOL (^)(NSInteger))shouldChangePage {
+    self.paggingNavbar.shouldChangePage = shouldChangePage;
+}
+
+- (BOOL (^)(NSInteger))shouldChangePage {
+    return self.paggingNavbar.shouldChangePage;
+}
+
 - (void)setScrollEnabled:(BOOL)scrollEnabled {
     self.paggingScrollView.scrollEnabled = scrollEnabled;
 }
