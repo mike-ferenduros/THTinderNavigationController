@@ -12,9 +12,8 @@
 
 #define kXHLabelBaseTag 1000
 #define WIDTH self.bounds.size.width
-#define IMAGESIZE 30
-#define SPEED 2.45
-#define Y_POSITION 28
+#define IMAGESIZE 38
+#define Y_POSITION 24
 
 static CGFloat MARGIN = 15.0;
 
@@ -34,9 +33,9 @@ static CGFloat MARGIN = 15.0;
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
         
         CGFloat width = (WIDTH - MARGIN * 2);
-        CGFloat step = (width / 2 - MARGIN) * idx + MARGIN;
+        CGFloat step = (width / 2 - MARGIN) * idx;
         
-        CGRect itemViewFrame = CGRectMake(step, Y_POSITION, IMAGESIZE, IMAGESIZE);
+        CGRect itemViewFrame = CGRectMake(step - MARGIN / 2 , Y_POSITION, IMAGESIZE, IMAGESIZE);
         itemView.hidden = NO;
         itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         itemView.frame = itemViewFrame;
@@ -84,10 +83,10 @@ static CGFloat MARGIN = 15.0;
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
         
         CGFloat width = (WIDTH - MARGIN * 2);
-        CGFloat step = (width / 2 - MARGIN) * idx + MARGIN;
+        CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
         
         CGRect itemViewFrame = itemView.frame;
-        itemViewFrame.origin.x = step - (xOffset - normalWidth) / SPEED;
+        itemViewFrame.origin.x = MARGIN + step * idx - xOffset / normalWidth * step + step;
         itemView.frame = itemViewFrame;
         
         CGFloat ratio;
