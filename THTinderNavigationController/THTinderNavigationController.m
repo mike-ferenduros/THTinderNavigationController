@@ -38,11 +38,18 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
     self.paggingNavbar.currentPage = currentPage;
-    self.currentPage = currentPage;
+    if (animated) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.currentPage = currentPage;
+        });
+    } else {
+        self.currentPage = currentPage;
+    }
     
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
     
     [self.paggingScrollView setContentOffset:CGPointMake(currentPage * pageWidth, 0) animated:animated];
+    
 }
 
 - (void)reloadData {
