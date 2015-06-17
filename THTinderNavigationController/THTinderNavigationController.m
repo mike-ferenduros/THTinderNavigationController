@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 @property (nonatomic, strong) THTinderNavigationBar *paggingNavbar;
 
-@property (nonatomic, assign) NSInteger currentPage;
+@property (nonatomic, assign) NSUInteger currentPage;
 
 @property (nonatomic, strong) UIViewController *leftViewController;
 
@@ -32,11 +32,11 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 #pragma mark - DataSource
 
-- (NSInteger)getCurrentPageIndex {
+- (NSUInteger)getCurrentPageIndex {
     return self.currentPage;
 }
 
-- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
+- (void)setCurrentPage:(NSUInteger)currentPage animated:(BOOL)animated {
     self.paggingNavbar.currentPage = currentPage;
     if (animated) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -87,11 +87,11 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     return self.paggingScrollView.contentInset;
 }
 
-- (void)setShouldChangePage:(BOOL (^)(NSInteger))shouldChangePage {
+- (void)setShouldChangePage:(BOOL (^)(NSUInteger))shouldChangePage {
     self.paggingNavbar.shouldChangePage = shouldChangePage;
 }
 
-- (BOOL (^)(NSInteger))shouldChangePage {
+- (BOOL (^)(NSUInteger))shouldChangePage {
     return self.paggingNavbar.shouldChangePage;
 }
 
@@ -138,7 +138,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     return _paggingNavbar;
 }
 
-- (UIViewController *)getPageViewControllerAtIndex:(NSInteger)index {
+- (UIViewController *)getPageViewControllerAtIndex:(NSUInteger)index {
     if (index < self.paggedViewControllers.count) {
         return self.paggedViewControllers[index];
     } else {
@@ -146,7 +146,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     }
 }
 
-- (void)setCurrentPage:(NSInteger)currentPage {
+- (void)setCurrentPage:(NSUInteger)currentPage {
     if (_currentPage == currentPage)
         return;
     _currentPage = currentPage;
@@ -280,7 +280,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 #pragma mark - TableView Helper Method
 
 - (void)setupScrollToTop {
-    for (int i = 0; i < self.paggedViewControllers.count; i ++) {
+    for (NSUInteger i = 0; i < self.paggedViewControllers.count; i ++) {
         UITableView *tableView = (UITableView *)[self subviewWithClass:[UITableView class] onView:[self getPageViewControllerAtIndex:i].view];
         if (tableView) {
             if (self.currentPage == i) {
@@ -315,7 +315,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
-    self.currentPage = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+    self.currentPage = (NSUInteger) (floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1);
 }
 
 @end

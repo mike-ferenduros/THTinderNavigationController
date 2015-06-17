@@ -52,7 +52,7 @@ static CGFloat MARGIN = 15.0;
 
 - (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture
 {
-    NSInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
+    NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
     
     if (self.shouldChangePage) {
         if (self.shouldChangePage(pageIndex)) {

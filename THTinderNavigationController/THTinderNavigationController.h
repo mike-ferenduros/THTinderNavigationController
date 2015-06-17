@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
+typedef void(^THDidChangedPageBlock)(NSUInteger currentPage, NSString *title);
 
 @interface THTinderNavigationController : UIViewController
 
@@ -17,7 +17,7 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 
 @property (nonatomic, assign) UIEdgeInsets scrollViewInsets;
 
-@property (nonatomic, copy) BOOL (^shouldChangePage)(NSInteger page);
+@property (nonatomic, copy) BOOL (^shouldChangePage)(NSUInteger page);
 
 @property (nonatomic, strong) NSArray *paggedViewControllers;
 @property (nonatomic, strong) NSArray *navbarItemViews;
@@ -30,9 +30,9 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 
 - (instancetype)initWithLeftViewController:(UIViewController *)leftViewController rightViewController:(UIViewController *)rightViewController;
 
-- (NSInteger)getCurrentPageIndex;
+- (NSUInteger)getCurrentPageIndex;
 
-- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
+- (void)setCurrentPage:(NSUInteger)currentPage animated:(BOOL)animated;
 
 - (void)reloadData;
 

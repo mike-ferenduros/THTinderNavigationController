@@ -13,13 +13,13 @@
 
 @property (nonatomic, strong) NSArray *itemViews;
 
-@property (nonatomic, assign) NSInteger currentPage;
+@property (nonatomic, assign) NSUInteger currentPage;
 
 @property (nonatomic, assign) CGPoint contentOffset;
 
 @property (strong, nonatomic) THTinderNavigationController *navigationController;
 
-@property (copy, nonatomic) BOOL (^shouldChangePage)(NSInteger index);
+@property (copy, nonatomic) BOOL (^shouldChangePage)(NSUInteger index);
 
 - (void)reloadData;
 
