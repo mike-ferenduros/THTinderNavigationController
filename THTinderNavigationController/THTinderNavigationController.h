@@ -12,10 +12,17 @@ typedef void(^THDidChangedPageBlock)(NSInteger currentPage, NSString *title);
 
 @interface THTinderNavigationController : UIViewController
 
+@property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, copy) THDidChangedPageBlock didChangedPageCompleted;
+
+@property (nonatomic, assign) UIEdgeInsets scrollViewInsets;
+
+@property (nonatomic, copy) BOOL (^shouldChangePage)(NSInteger page);
 
 @property (nonatomic, strong) NSArray *paggedViewControllers;
 @property (nonatomic, strong) NSArray *navbarItemViews;
+
+@property (nonatomic, assign) BOOL scrollEnabled;
 
 - (instancetype)initWithLeftViewController:(UIViewController *)leftViewController;
 

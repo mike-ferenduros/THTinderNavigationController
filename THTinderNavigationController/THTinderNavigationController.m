@@ -16,7 +16,6 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 @interface THTinderNavigationController () <UIScrollViewDelegate>
 
-@property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, strong) UIScrollView *paggingScrollView;
 
 @property (nonatomic, strong) THTinderNavigationBar *paggingNavbar;
@@ -39,11 +38,18 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
     self.paggingNavbar.currentPage = currentPage;
-    self.currentPage = currentPage;
+    if (animated) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.currentPage = currentPage;
+        });
+    } else {
+        self.currentPage = currentPage;
+    }
     
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
     
     [self.paggingScrollView setContentOffset:CGPointMake(currentPage * pageWidth, 0) animated:animated];
+    
 }
 
 - (void)reloadData {
@@ -72,6 +78,30 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 }
 
 #pragma mark - Propertys
+
+- (void)setScrollViewInsets:(UIEdgeInsets)scrollViewInsets {
+    self.paggingScrollView.contentInset = scrollViewInsets;
+}
+
+- (UIEdgeInsets)scrollViewInsets {
+    return self.paggingScrollView.contentInset;
+}
+
+- (void)setShouldChangePage:(BOOL (^)(NSInteger))shouldChangePage {
+    self.paggingNavbar.shouldChangePage = shouldChangePage;
+}
+
+- (BOOL (^)(NSInteger))shouldChangePage {
+    return self.paggingNavbar.shouldChangePage;
+}
+
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+    self.paggingScrollView.scrollEnabled = scrollEnabled;
+}
+
+- (BOOL)scrollEnabled {
+    return self.paggingScrollView.scrollEnabled;
+}
 
 - (UIView *)centerContainerView {
     if (!_centerContainerView) {

@@ -19,6 +19,8 @@
 
 @property (strong, nonatomic) THTinderNavigationController *navigationController;
 
+@property (copy, nonatomic) BOOL (^shouldChangePage)(NSInteger index);
+
 - (void)reloadData;
 
 @end

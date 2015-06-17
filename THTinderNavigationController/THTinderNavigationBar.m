@@ -11,13 +11,11 @@
 #define kXHiPad ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
 #define kXHLabelBaseTag 1000
-
-#define MARGIN_LEFT 145
 #define WIDTH self.bounds.size.width
-#define IMAGESIZE 30
-#define STEP 130
-#define SPEED 2.45
-#define Y_POSITION 28
+#define IMAGESIZE 38
+#define Y_POSITION 24
+
+static CGFloat MARGIN = 15.0;
 
 @interface THTinderNavigationBar ()
 
@@ -33,27 +31,36 @@
     }
     
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
-        
-        //dyanmically get the width with 15px side margins
-        CGFloat width = (WIDTH - 30);
-        CGFloat step = (width / 2 - 15) * idx + 15;
-        
-        CGRect itemViewFrame = CGRectMake(step, Y_POSITION, IMAGESIZE, IMAGESIZE);
+
+        CGFloat width = (WIDTH - MARGIN * 2);
+        CGFloat step = (width / 2 - MARGIN) * idx;
+        CGRect itemViewFrame = CGRectMake(step - MARGIN / 2 , Y_POSITION, IMAGESIZE, IMAGESIZE);
         itemView.hidden = NO;
         itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         itemView.frame = itemViewFrame;
+
         if (self.currentPage + 1 == idx) {
             [self updateItemView:itemView withRatio:1.0];
         } else {
             [self updateItemView:itemView withRatio:0.0];
         }
     }];
+    
+    // Dirty hack
+    [self setContentOffset:self.contentOffset];
 }
 
 - (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture
 {
     NSInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
-    [self.navigationController setCurrentPage:pageIndex animated:YES];
+    
+    if (self.shouldChangePage) {
+        if (self.shouldChangePage(pageIndex)) {
+            [self.navigationController setCurrentPage:pageIndex animated:YES];
+        }
+    } else {
+        [self.navigationController setCurrentPage:pageIndex animated:YES];
+    }
 }
 
 #pragma mark - Other
@@ -74,13 +81,12 @@
     CGFloat normalWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
     
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
-        
-        //dyanmically get the width with 15px side margins
-        CGFloat width = (WIDTH - 30);
-        CGFloat step = (width / 2 - 15) * idx + 15;
+
+        CGFloat width = (WIDTH - MARGIN * 2);
+        CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
         
         CGRect itemViewFrame = itemView.frame;
-        itemViewFrame.origin.x = step - (xOffset - normalWidth) / SPEED;
+        itemViewFrame.origin.x = MARGIN + step * idx - xOffset / normalWidth * step + step;
         itemView.frame = itemViewFrame;
         
         CGFloat ratio;
