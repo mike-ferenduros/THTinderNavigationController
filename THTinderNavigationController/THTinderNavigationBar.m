@@ -29,12 +29,12 @@ static CGFloat MARGIN = 15.0;
     if (!self.itemViews.count) {
         return;
     }
-    
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
 
         CGFloat width = (WIDTH - MARGIN * 2);
         CGFloat step = (width / 2 - MARGIN) * idx;
-        CGRect itemViewFrame = CGRectMake(step - MARGIN / 2 , Y_POSITION, IMAGESIZE, IMAGESIZE);
+        CGRect itemViewFrame = CGRectMake(step - MARGIN / 2, Y_POSITION, IMAGESIZE, IMAGESIZE);
         itemView.hidden = NO;
         itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         itemView.frame = itemViewFrame;
@@ -45,15 +45,14 @@ static CGFloat MARGIN = 15.0;
             [self updateItemView:itemView withRatio:0.0];
         }
     }];
-    
+
     // Dirty hack
     [self setContentOffset:self.contentOffset];
 }
 
-- (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture
-{
+- (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture {
     NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
-    
+
     if (self.shouldChangePage) {
         if (self.shouldChangePage(pageIndex)) {
             [self.navigationController setCurrentPage:pageIndex animated:YES];
@@ -65,7 +64,7 @@ static CGFloat MARGIN = 15.0;
 
 #pragma mark - Other
 
-- (void)updateItemView:(UIView<THTinderNavigationBarItem> *)itemView withRatio:(CGFloat)ratio {
+- (void)updateItemView:(UIView <THTinderNavigationBarItem> *)itemView withRatio:(CGFloat)ratio {
     if ([itemView respondsToSelector:@selector(updateViewWithRatio:)]) {
         [itemView updateViewWithRatio:ratio];
     }
@@ -75,47 +74,46 @@ static CGFloat MARGIN = 15.0;
 
 - (void)setContentOffset:(CGPoint)contentOffset {
     _contentOffset = contentOffset;
-    
+
     CGFloat xOffset = contentOffset.x;
-    
+
     CGFloat normalWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
 
         CGFloat width = (WIDTH - MARGIN * 2);
         CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
-        
+
         CGRect itemViewFrame = itemView.frame;
         itemViewFrame.origin.x = MARGIN + step * idx - xOffset / normalWidth * step + step;
         itemView.frame = itemViewFrame;
-        
+
         CGFloat ratio;
-        if(xOffset < normalWidth * idx) {
+        if (xOffset < normalWidth * idx) {
             ratio = (xOffset - normalWidth * (idx - 1)) / normalWidth;
-        }else{
+        } else {
             ratio = 1 - ((xOffset - normalWidth * idx) / normalWidth);
         }
-        
+
         [self updateItemView:itemView withRatio:ratio];
     }];
 }
 
-- (void)setItemViews:(NSArray *)itemViews
-{
+- (void)setItemViews:(NSArray *)itemViews {
     if (itemViews) {
-        
-        [self.itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+
+        [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
             [itemView removeFromSuperview];
         }];
-        
-        [itemViews enumerateObjectsUsingBlock:^(UIView<THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+
+        [itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
             itemView.userInteractionEnabled = YES;
             UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
             [itemView addGestureRecognizer:tapGesture];
             [self addSubview:itemView];
         }];
     }
-    
+
     _itemViews = itemViews;
 }
 

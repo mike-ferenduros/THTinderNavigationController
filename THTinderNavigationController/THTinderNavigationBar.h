@@ -12,13 +12,9 @@
 @interface THTinderNavigationBar : UINavigationBar
 
 @property (nonatomic, strong) NSArray *itemViews;
-
 @property (nonatomic, assign) NSUInteger currentPage;
-
 @property (nonatomic, assign) CGPoint contentOffset;
-
 @property (strong, nonatomic) THTinderNavigationController *navigationController;
-
 @property (copy, nonatomic) BOOL (^shouldChangePage)(NSUInteger index);
 
 - (void)reloadData;
@@ -26,9 +22,6 @@
 @end
 
 @protocol THTinderNavigationBarItem <NSObject>
-
 @optional
-
 - (void)updateViewWithRatio:(CGFloat)ratio;
-
 @end
