@@ -1,11 +1,13 @@
-THTinderNavigationController
-============================
+# THTinderNavigationController
 
-#Installation
+# Installation
 
-Just drop `THTinderNavigationController` directory in your project.
+THTinderNavigationController is available through [CocoaPods](http://cocoapods.org). In case original author [Tgy31](https://github.com/Tgy31) would like to set a pod for himself I've hypned my twitter handle at the end of pod name. To install it, simply add the following line to your Podfile:
+```ruby
+pod 'THTinderNavigationController-ssuchanowski'
+```
 
-#How to use
+# How to use
 
 Create a `THTinderNavigationController`.
 
@@ -46,3 +48,7 @@ In the demo, to change the size:
         self.coloredView.frame = CGRectMake(x, y, width, height);
         self.coloredView.layer.cornerRadius = height/2.0;
     }
+
+# TODO
+* Build better readme
+* Add usage samples

@@ -16,12 +16,11 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 @interface THTinderNavigationController () <UIScrollViewDelegate>
 
-@property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, strong) UIScrollView *paggingScrollView;
 
 @property (nonatomic, strong) THTinderNavigationBar *paggingNavbar;
 
-@property (nonatomic, assign) NSInteger currentPage;
+@property (nonatomic, assign) NSUInteger currentPage;
 
 @property (nonatomic, strong) UIViewController *leftViewController;
 
@@ -33,26 +32,33 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 #pragma mark - DataSource
 
-- (NSInteger)getCurrentPageIndex {
+- (NSUInteger)getCurrentPageIndex {
     return self.currentPage;
 }
 
-- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
+- (void)setCurrentPage:(NSUInteger)currentPage animated:(BOOL)animated {
     self.paggingNavbar.currentPage = currentPage;
-    self.currentPage = currentPage;
-    
+    if (animated) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.currentPage = currentPage;
+        });
+    } else {
+        self.currentPage = currentPage;
+    }
+
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
-    
+
     [self.paggingScrollView setContentOffset:CGPointMake(currentPage * pageWidth, 0) animated:animated];
+
 }
 
 - (void)reloadData {
     if (!self.paggedViewControllers.count) {
         return;
     }
-    
+
     [self.paggingScrollView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    
+
     [self.paggedViewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, NSUInteger idx, BOOL *stop) {
         CGRect contentViewFrame = viewController.view.bounds;
         contentViewFrame.origin.x = idx * CGRectGetWidth(self.view.bounds);
@@ -60,24 +66,48 @@ typedef NS_ENUM(NSInteger, THSlideType) {
         [self.paggingScrollView addSubview:viewController.view];
         [self addChildViewController:viewController];
     }];
-    
+
     [self.paggingScrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds) * self.paggedViewControllers.count, 0)];
-    
+
     self.paggingNavbar.itemViews = self.navbarItemViews;
     [self.paggingNavbar reloadData];
-    
+
     [self setupScrollToTop];
-    
+
     [self callBackChangedPage];
 }
 
 #pragma mark - Propertys
 
+- (void)setScrollViewInsets:(UIEdgeInsets)scrollViewInsets {
+    self.paggingScrollView.contentInset = scrollViewInsets;
+}
+
+- (UIEdgeInsets)scrollViewInsets {
+    return self.paggingScrollView.contentInset;
+}
+
+- (void)setShouldChangePage:(BOOL (^)(NSUInteger))shouldChangePage {
+    self.paggingNavbar.shouldChangePage = shouldChangePage;
+}
+
+- (BOOL (^)(NSUInteger))shouldChangePage {
+    return self.paggingNavbar.shouldChangePage;
+}
+
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+    self.paggingScrollView.scrollEnabled = scrollEnabled;
+}
+
+- (BOOL)scrollEnabled {
+    return self.paggingScrollView.scrollEnabled;
+}
+
 - (UIView *)centerContainerView {
     if (!_centerContainerView) {
         _centerContainerView = [[UIView alloc] initWithFrame:self.view.bounds];
         _centerContainerView.backgroundColor = [UIColor whiteColor];
-        
+
         [_centerContainerView addSubview:self.paggingScrollView];
         [self.paggingScrollView.panGestureRecognizer addTarget:self action:@selector(panGestureRecognizerHandle:)];
     }
@@ -108,7 +138,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     return _paggingNavbar;
 }
 
-- (UIViewController *)getPageViewControllerAtIndex:(NSInteger)index {
+- (UIViewController *)getPageViewControllerAtIndex:(NSUInteger)index {
     if (index < self.paggedViewControllers.count) {
         return self.paggedViewControllers[index];
     } else {
@@ -116,20 +146,19 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     }
 }
 
-- (void)setCurrentPage:(NSInteger)currentPage {
+- (void)setCurrentPage:(NSUInteger)currentPage {
     if (_currentPage == currentPage)
         return;
     _currentPage = currentPage;
-    
+
     //so that nav bar starts on the middle page
     self.paggingNavbar.currentPage = currentPage + 1;
-    
+
     [self setupScrollToTop];
     [self callBackChangedPage];
 }
 
-- (void)setNavbarItemViews:(NSArray *)navbarItemViews
-{
+- (void)setNavbarItemViews:(NSArray *)navbarItemViews {
     _navbarItemViews = navbarItemViews;
     self.paggingNavbar.itemViews = navbarItemViews;
 }
@@ -139,7 +168,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 - (void)setupTargetViewController:(UIViewController *)targetViewController withSlideType:(THSlideType)slideType {
     if (!targetViewController)
         return;
-    
+
     [self addChildViewController:targetViewController];
     CGRect targetViewFrame = targetViewController.view.frame;
     switch (slideType) {
@@ -171,7 +200,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     self = [super init];
     if (self) {
         self.leftViewController = leftViewController;
-        
+
         self.rightViewController = rightViewController;
     }
     return self;
@@ -183,15 +212,15 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [self setupViews];
-    
+
     [self reloadData];
 }
 
 - (void)setupViews {
     [self.view addSubview:self.centerContainerView];
-    
+
     [self setupTargetViewController:self.leftViewController withSlideType:THSlideTypeLeft];
     [self setupTargetViewController:self.rightViewController withSlideType:THSlideTypeRight];
 }
@@ -199,11 +228,11 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 - (void)dealloc {
     self.paggingScrollView.delegate = nil;
     self.paggingScrollView = nil;
-    
+
     self.paggingNavbar = nil;
-    
+
     self.paggedViewControllers = nil;
-    
+
     self.didChangedPageCompleted = nil;
 }
 
@@ -211,14 +240,14 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)panGestureRecognizerHandle:(UIPanGestureRecognizer *)panGestureRecognizer {
     CGPoint contentOffset = self.paggingScrollView.contentOffset;
-    
+
     CGSize contentSize = self.paggingScrollView.contentSize;
-    
+
     CGFloat baseWidth = CGRectGetWidth(self.paggingScrollView.bounds);
-    
+
     switch (panGestureRecognizer.state) {
         case UIGestureRecognizerStateBegan:
-            
+
             break;
         case UIGestureRecognizerStateChanged: {
             if (contentOffset.x <= 0) {
@@ -250,8 +279,8 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 #pragma mark - TableView Helper Method
 
 - (void)setupScrollToTop {
-    for (int i = 0; i < self.paggedViewControllers.count; i ++) {
-        UITableView *tableView = (UITableView *)[self subviewWithClass:[UITableView class] onView:[self getPageViewControllerAtIndex:i].view];
+    for (NSUInteger i = 0; i < self.paggedViewControllers.count; i++) {
+        UITableView *tableView = (UITableView *) [self subviewWithClass:[UITableView class] onView:[self getPageViewControllerAtIndex:i].view];
         if (tableView) {
             if (self.currentPage == i) {
                 [tableView setScrollsToTop:YES];
@@ -276,7 +305,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 #pragma mark - UIScrollView Delegate
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-    
+
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -285,7 +314,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
-    self.currentPage = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+    self.currentPage = (NSUInteger) (floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1);
 }
 
 @end
