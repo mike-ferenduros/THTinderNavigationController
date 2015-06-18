@@ -88,7 +88,13 @@
             ((UIButton *) singleSubview).tintColor = tintColor;
             [((UIButton *) singleSubview) setTitleColor:tintColor forState:UIControlStateNormal];
             [((UIButton *) singleSubview) setTitleColor:tintColor forState:UIControlStateHighlighted];
-        } else if ([singleSubview isKindOfClass:[UIView class]]) {
+        } else if ([singleSubview isKindOfClass:[UITextField class]]) {
+            ((UITextField *) singleSubview).textColor = tintColor;
+        } else if ([singleSubview isKindOfClass:[UITextView class]]) {
+            ((UITextView *) singleSubview).textColor = tintColor;
+        } else if ([singleSubview isKindOfClass:[UIImageView class]]) {
+            ((UIImageView *) singleSubview).tintColor = tintColor;
+        } else if ([singleSubview isKindOfClass:[UIView class]] && ![singleSubview isKindOfClass:[UIControl class]]) {
             [self changeSubviewsOfView:singleSubview tintColor:tintColor]; // go deep :P
         } else {
             singleSubview.tintColor = tintColor;
