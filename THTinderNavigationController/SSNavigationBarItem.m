@@ -53,17 +53,12 @@
         newRed = inactiveRed + ratio * (activeRed - inactiveRed);
         newGreen = inactiveGreen + ratio * (activeGreen - inactiveGreen);
         newBlue = inactiveBlue + ratio * (activeBlue - inactiveBlue);
+        UIColor *newTintColor = [UIColor colorWithRed:newRed green:newGreen blue:newBlue alpha:1.0f];
 
         if (self.imageView) {
-            self.imageView.tintColor = [UIColor colorWithRed:newRed green:newGreen blue:newBlue alpha:1.0f];
+            self.imageView.tintColor = newTintColor;
         } else if (self.contentView) {
-            for (UIView *singleSubview in self.contentView.subviews) {
-                if ([singleSubview isKindOfClass:[UIActivityIndicatorView class]]) {
-                    ((UIActivityIndicatorView *) singleSubview).color = [UIColor colorWithRed:newRed green:newGreen blue:newBlue alpha:1.0f];
-                } else {
-                    singleSubview.tintColor = [UIColor colorWithRed:newRed green:newGreen blue:newBlue alpha:1.0f];
-                }
-            }
+            [self changeSubviewsOfView:self.contentView tintColor:newTintColor];
         }
     }
 
@@ -80,6 +75,24 @@
         CGFloat x = (self.contentViewFrame.size.width - width) / 2.0f;
         CGFloat y = (self.contentViewFrame.size.height - height) / 2.0f;
         self.contentView.frame = CGRectMake(x, y, width, height);
+    }
+}
+
+- (void)changeSubviewsOfView:(UIView *)view tintColor:(UIColor *)tintColor {
+    for (UIView *singleSubview in view.subviews) {
+        if ([singleSubview isKindOfClass:[UIActivityIndicatorView class]]) {
+            ((UIActivityIndicatorView *) singleSubview).color = tintColor;
+        } else if ([singleSubview isKindOfClass:[UILabel class]]) {
+            ((UILabel *) singleSubview).textColor = tintColor;
+        } else if ([singleSubview isKindOfClass:[UIButton class]]) {
+            ((UIButton *) singleSubview).tintColor = tintColor;
+            [((UIButton *) singleSubview) setTitleColor:tintColor forState:UIControlStateNormal];
+            [((UIButton *) singleSubview) setTitleColor:tintColor forState:UIControlStateHighlighted];
+        } else if ([singleSubview isKindOfClass:[UIView class]]) {
+            [self changeSubviewsOfView:singleSubview tintColor:tintColor]; // go deep :P
+        } else {
+            singleSubview.tintColor = tintColor;
+        }
     }
 }
 
