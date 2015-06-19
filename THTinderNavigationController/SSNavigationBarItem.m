@@ -80,6 +80,9 @@
 
 - (void)changeSubviewsOfView:(UIView *)view tintColor:(UIColor *)tintColor {
     for (UIView *singleSubview in view.subviews) {
+        // disable actions on non active items
+        singleSubview.userInteractionEnabled = [tintColor isEqual:self.activeColor];
+
         if ([singleSubview isKindOfClass:[UIActivityIndicatorView class]]) {
             ((UIActivityIndicatorView *) singleSubview).color = tintColor;
         } else if ([singleSubview isKindOfClass:[UILabel class]]) {
