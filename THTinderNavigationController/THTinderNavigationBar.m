@@ -73,7 +73,7 @@ static CGFloat MARGIN = 15.0;
                     nextPageIndex--;
                 }
             } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-                if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+                if (nextPageIndex < self.itemViews.count - 1) {
                     nextPageIndex++;
                 }
             }
@@ -86,7 +86,7 @@ static CGFloat MARGIN = 15.0;
                 nextPageIndex--;
             }
         } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-            if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+            if (nextPageIndex < self.itemViews.count - 1) {
                 nextPageIndex++;
             }
         }
