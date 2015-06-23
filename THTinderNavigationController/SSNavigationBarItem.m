@@ -79,6 +79,8 @@
 }
 
 - (void)changeSubviewsOfView:(UIView *)view tintColor:(UIColor *)tintColor {
+    [[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder) to:nil from:nil forEvent:nil];
+
     for (UIView *singleSubview in view.subviews) {
         // disable actions on non active items
         singleSubview.userInteractionEnabled = [tintColor isEqual:self.activeColor];
