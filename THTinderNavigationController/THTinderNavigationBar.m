@@ -62,6 +62,38 @@ static CGFloat MARGIN = 15.0;
     }
 }
 
+- (void)swipeGestureHandle:(UISwipeGestureRecognizer *)swipeGesture {
+
+    NSUInteger pageIndex = [self.navigationController getCurrentPageIndex];
+    if (self.shouldChangePage) {
+        if (self.shouldChangePage(pageIndex)) {
+            NSUInteger nextPageIndex = pageIndex;
+            if (swipeGesture.direction == UISwipeGestureRecognizerDirectionRight) {
+                if (nextPageIndex > 0 && nextPageIndex <= self.itemViews.count - 1) {
+                    nextPageIndex--;
+                }
+            } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
+                if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+                    nextPageIndex++;
+                }
+            }
+            [self.navigationController setCurrentPage:nextPageIndex animated:YES];
+        }
+    } else {
+        NSUInteger nextPageIndex = pageIndex;
+        if (swipeGesture.direction == UISwipeGestureRecognizerDirectionRight) {
+            if (nextPageIndex > 0 && nextPageIndex <= self.itemViews.count - 1) {
+                nextPageIndex--;
+            }
+        } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
+            if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+                nextPageIndex++;
+            }
+        }
+        [self.navigationController setCurrentPage:nextPageIndex animated:YES];
+    }
+}
+
 #pragma mark - Other
 
 - (void)updateItemView:(UIView <THTinderNavigationBarItem> *)itemView withRatio:(CGFloat)ratio {
@@ -114,6 +146,14 @@ static CGFloat MARGIN = 15.0;
         }];
     }
 
+    UISwipeGestureRecognizer *swipeLeftGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeGestureHandle:)];
+    swipeLeftGestureRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+    UISwipeGestureRecognizer *swipeRightGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeGestureHandle:)];
+    swipeRightGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+
+    [self addGestureRecognizer:swipeLeftGestureRecognizer];
+    [self addGestureRecognizer:swipeRightGestureRecognizer];
+
     _itemViews = itemViews;
 }
 
@@ -125,10 +165,6 @@ static CGFloat MARGIN = 15.0;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     }
     return self;
-}
-
-- (void)dealloc {
-    self.itemViews = nil;
 }
 
 @end
