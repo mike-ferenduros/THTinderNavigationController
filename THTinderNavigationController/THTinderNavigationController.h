@@ -8,9 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class THTinderNavigationBar;
+
 typedef void(^THDidChangedPageBlock)(NSUInteger currentPage, NSString *title);
 
 @interface THTinderNavigationController : UIViewController
+
+@property (readonly) THTinderNavigationBar *paggingNavbar;
 
 @property (nonatomic, strong) UIView *centerContainerView;
 @property (nonatomic, copy) THDidChangedPageBlock didChangedPageCompleted;

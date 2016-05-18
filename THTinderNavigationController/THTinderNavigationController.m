@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 @property (nonatomic, strong) UIScrollView *paggingScrollView;
 
-@property (nonatomic, strong) THTinderNavigationBar *paggingNavbar;
+@property (nonatomic, strong, readwrite) THTinderNavigationBar *paggingNavbar;
 
 @property (nonatomic, assign) NSUInteger currentPage;
 
