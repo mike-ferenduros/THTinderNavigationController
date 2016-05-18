@@ -167,5 +167,23 @@ static CGFloat MARGIN = 15.0;
     return self;
 }
 
+#pragma mark - Out-of-bounds tap handling
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+    if (self.allowOutOfBoundsInteraction ) {
+        for (UIView *subview in self.subviews) {
+            if (!subview.userInteractionEnabled) {
+                continue;
+            }
+            CGPoint localPoint = [subview convertPoint:point fromView:self];
+            if ([subview pointInside:localPoint withEvent:event]) {
+                return YES;
+            }
+        }
+    }
+    return [super pointInside:point withEvent:event];
+}
+
 @end
 
