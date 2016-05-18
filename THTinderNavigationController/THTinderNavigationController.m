@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
 - (void)setCurrentPage:(NSUInteger)currentPage animated:(BOOL)animated {
     [self view];
+    self.paggingNavbar.currentPage = currentPage;
     if (animated) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.currentPage = currentPage;

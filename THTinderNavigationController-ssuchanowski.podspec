@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "THTinderNavigationController-ssuchanowski"
-  s.version      = "1.1.1"
+  s.version      = "1.1.2"
   s.summary      = "iOS navigation component based on Tinder app"
   s.description  = <<-DESC
                  iOS navigation component based on Tinder app. This is a fork of https://github.com/Tgy31 repository
