@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 }
 
 - (void)setCurrentPage:(NSUInteger)currentPage animated:(BOOL)animated {
-    self.paggingNavbar.currentPage = currentPage;
+    [self view];
     if (animated) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.currentPage = currentPage;
@@ -128,6 +128,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 }
 
 - (THTinderNavigationBar *)paggingNavbar {
+    [self view];
     if (!_paggingNavbar) {
         _paggingNavbar = [[THTinderNavigationBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 64)];
         _paggingNavbar.backgroundColor = [UIColor clearColor];
