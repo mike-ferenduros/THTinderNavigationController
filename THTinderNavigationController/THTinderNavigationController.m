@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 
     CGFloat pageWidth = CGRectGetWidth(self.paggingScrollView.frame);
 
-    [self.paggingScrollView setContentOffset:CGPointMake(currentPage * pageWidth, 0) animated:animated];
+    [self.paggingScrollView setContentOffset:CGPointMake(currentPage * pageWidth, self.paggingScrollView.contentOffset.y) animated:animated];
 
 }
 
@@ -61,14 +61,24 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     [self.paggingScrollView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 
     [self.paggedViewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, NSUInteger idx, BOOL *stop) {
-        CGRect contentViewFrame = viewController.view.bounds;
-        contentViewFrame.origin.x = idx * CGRectGetWidth(self.view.bounds);
-        viewController.view.frame = contentViewFrame;
+        viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
         [self.paggingScrollView addSubview:viewController.view];
+        [self.paggingScrollView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+        [self.paggingScrollView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+        if (idx == 0) {
+            [self.paggingScrollView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+        } else {
+            UIViewController *prev = self.paggedViewControllers[idx-1];
+            [self.paggingScrollView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:prev.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+        }
+        if (idx == self.paggedViewControllers.count - 1) {
+            [self.paggingScrollView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+        }
+        [self.centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.centerContainerView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+        [self.centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:viewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.centerContainerView attribute:NSLayoutAttributeHeight multiplier:1 constant:0]];
+
         [self addChildViewController:viewController];
     }];
-
-    [self.paggingScrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds) * self.paggedViewControllers.count, 0)];
 
     self.paggingNavbar.itemViews = self.navbarItemViews;
     [self.paggingNavbar reloadData];
@@ -110,6 +120,11 @@ typedef NS_ENUM(NSInteger, THSlideType) {
         _centerContainerView.backgroundColor = [UIColor whiteColor];
 
         [_centerContainerView addSubview:self.paggingScrollView];
+        self.paggingScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_centerContainerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+        [_centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_centerContainerView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+        [_centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_centerContainerView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+        [_centerContainerView addConstraint:[NSLayoutConstraint constraintWithItem:_centerContainerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.paggingScrollView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
         [self.paggingScrollView.panGestureRecognizer addTarget:self action:@selector(panGestureRecognizerHandle:)];
     }
     return _centerContainerView;
@@ -208,20 +223,32 @@ typedef NS_ENUM(NSInteger, THSlideType) {
     return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
 
     [self setupViews];
 
     [self reloadData];
+    
+    [self.view layoutIfNeeded];
 }
 
 - (void)setupViews {
     [self.view addSubview:self.centerContainerView];
+    [self.view addSubview:self.paggingNavbar];
+
+    self.centerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.paggingNavbar.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.paggingNavbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:64]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.paggingNavbar attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.paggingNavbar attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.paggingNavbar attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.centerContainerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.paggingNavbar attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.centerContainerView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.centerContainerView attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.centerContainerView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
 
     [self setupTargetViewController:self.leftViewController withSlideType:THSlideTypeLeft];
     [self setupTargetViewController:self.rightViewController withSlideType:THSlideTypeRight];

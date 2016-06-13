@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "THTinderNavigationController.h"
 
-@interface THTinderNavigationBar : UINavigationBar
+@interface THTinderNavigationBar : UIToolbar
 
 @property (nonatomic, strong) NSArray *itemViews;
 @property (nonatomic, assign) NSUInteger currentPage;
