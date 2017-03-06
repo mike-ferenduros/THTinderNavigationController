@@ -9,8 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "THTinderNavigationController.h"
 
+@protocol THTinderNavigationBarItem <NSObject>
+@optional
+- (void)updateViewWithRatio:(CGFloat)ratio;
+@end
+
 @interface THTinderNavigationBar : UIToolbar
 
+@property (nonatomic, strong) UIView *leftAccessoryView;
 @property (nonatomic, strong) NSArray *itemViews;
 @property (nonatomic, assign) NSUInteger currentPage;
 @property (nonatomic, assign) CGPoint contentOffset;
@@ -24,7 +30,3 @@
 
 @end
 
-@protocol THTinderNavigationBarItem <NSObject>
-@optional
-- (void)updateViewWithRatio:(CGFloat)ratio;
-@end

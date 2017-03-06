@@ -178,6 +178,13 @@ typedef NS_ENUM(NSInteger, THSlideType) {
 - (void)setNavbarItemViews:(NSArray *)navbarItemViews {
     _navbarItemViews = navbarItemViews;
     self.paggingNavbar.itemViews = navbarItemViews;
+    [self.paggingNavbar reloadData];
+}
+
+- (void)setNavbarLeftAccessoryView:(UIView *)view {
+    _navbarLeftAccessoryView = view;
+    self.paggingNavbar.leftAccessoryView = view;
+    [self.paggingNavbar reloadData];
 }
 
 #pragma mark - Life Cycle

@@ -23,6 +23,7 @@ typedef void(^THDidChangedPageBlock)(NSUInteger currentPage, NSString *title);
 
 @property (nonatomic, strong) NSArray *paggedViewControllers;
 @property (nonatomic, strong) NSArray *navbarItemViews;
+@property (nonatomic, strong) UIView *navbarLeftAccessoryView;
 
 @property (nonatomic, assign) UIEdgeInsets scrollViewInsets;
 @property (nonatomic, assign) BOOL scrollEnabled;

@@ -25,34 +25,39 @@ static CGFloat MARGIN = 15.0;
 
 #pragma mark - DataSource
 
+- (void)reloadItem:(UIView*)itemView atIndex:(NSInteger)idx {
+    CGFloat width = (WIDTH - MARGIN * 2);
+    CGFloat step = (width / 2 - MARGIN) * idx;
+    CGRect itemViewFrame = CGRectMake(step - MARGIN / 2, Y_POSITION, IMAGESIZE, IMAGESIZE);
+    itemView.hidden = NO;
+    itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    itemView.frame = itemViewFrame;
+
+    if (self.currentPage + 1 == idx) {
+        [self updateItemView:itemView withRatio:1.0];
+    } else {
+        [self updateItemView:itemView withRatio:0.0];
+    }
+}
+
 - (void)reloadData {
     if (!self.itemViews.count) {
         return;
     }
 
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger uidx, BOOL *stop) {
-
-        NSInteger idx = (NSInteger)uidx;
-        CGFloat width = (WIDTH - MARGIN * 2);
-        CGFloat step = (width / 2 - MARGIN) * idx;
-        CGRect itemViewFrame = CGRectMake(step - MARGIN / 2, Y_POSITION, IMAGESIZE, IMAGESIZE);
-        itemView.hidden = NO;
-        itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-        itemView.frame = itemViewFrame;
-
-        if (self.currentPage + 1 == (idx-1)) {
-            [self updateItemView:itemView withRatio:1.0];
-        } else {
-            [self updateItemView:itemView withRatio:0.0];
-        }
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView *itemView, NSUInteger uidx, BOOL *stop) {
+        [self reloadItem:itemView atIndex:uidx];
     }];
+    if (self.leftAccessoryView) {
+        [self reloadItem:self.leftAccessoryView atIndex:-1];
+    }
 
     // Dirty hack
     [self setContentOffset:self.contentOffset];
 }
 
 - (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture {
-    NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view] - 1;
+    NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
 
     if (self.shouldChangePage) {
         if (self.shouldChangePage(pageIndex)) {
@@ -97,55 +102,59 @@ static CGFloat MARGIN = 15.0;
 
 #pragma mark - Other
 
-- (void)updateItemView:(UIView <THTinderNavigationBarItem> *)itemView withRatio:(CGFloat)ratio {
+- (void)updateItemView:(UIView*)itemView withRatio:(CGFloat)ratio {
     if ([itemView respondsToSelector:@selector(updateViewWithRatio:)]) {
-        [itemView updateViewWithRatio:ratio];
+        [(UIView<THTinderNavigationBarItem>*)itemView updateViewWithRatio:ratio];
     }
 }
 
 #pragma mark - Properties
 
-- (void)setContentOffset:(CGPoint)contentOffset {
-    _contentOffset = contentOffset;
-
-    CGFloat xOffset = contentOffset.x;
+- (void)setContentOffsetForItem:(UIView*)itemView atIndex:(NSInteger)idx {
+    CGFloat xOffset = self.contentOffset.x;
 
     CGFloat normalWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
 
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger uidx, BOOL *stop) {
+    CGFloat width = (WIDTH - MARGIN * 2);
+    CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
 
-        NSInteger idx = (NSInteger)uidx;
-        CGFloat width = (WIDTH - MARGIN * 2);
-        CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
+    CGRect itemViewFrame = itemView.frame;
+    itemViewFrame.origin.x = MARGIN + step * idx - xOffset / normalWidth * step + step;
+    itemView.frame = itemViewFrame;
 
-        CGRect itemViewFrame = itemView.frame;
-        itemViewFrame.origin.x = MARGIN + step * (idx-1) - xOffset / normalWidth * step + step;
-        itemView.frame = itemViewFrame;
+    CGFloat ratio;
+    if (xOffset < normalWidth * idx) {
+        ratio = (xOffset - normalWidth * (idx - 1)) / normalWidth;
+    } else {
+        ratio = 1 - ((xOffset - normalWidth * idx) / normalWidth);
+    }
 
-        CGFloat ratio;
-        if (xOffset < normalWidth * (idx-1)) {
-            ratio = (xOffset - normalWidth * (idx - 2)) / normalWidth;
-        } else {
-            ratio = 1 - ((xOffset - normalWidth * (idx-1)) / normalWidth);
-        }
+    [self updateItemView:itemView withRatio:ratio];
+}
 
-        [self updateItemView:itemView withRatio:ratio];
+- (void)setContentOffset:(CGPoint)contentOffset {
+    _contentOffset = contentOffset;
+
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView *itemView, NSUInteger idx, BOOL *stop) {
+        [self setContentOffsetForItem:itemView atIndex:idx];
     }];
+
+    if (self.leftAccessoryView) {
+        [self setContentOffsetForItem:self.leftAccessoryView atIndex:-1];
+    }
 }
 
 - (void)setItemViews:(NSArray *)itemViews {
     if (itemViews) {
 
-        [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+        [self.itemViews enumerateObjectsUsingBlock:^(UIView *itemView, NSUInteger idx, BOOL *stop) {
             [itemView removeFromSuperview];
         }];
 
-        [itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+        [itemViews enumerateObjectsUsingBlock:^(UIView *itemView, NSUInteger idx, BOOL *stop) {
             itemView.userInteractionEnabled = YES;
-            if (idx > 0) {
-                UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
-                [itemView addGestureRecognizer:tapGesture];
-            }
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
+            [itemView addGestureRecognizer:tapGesture];
             [self addSubview:itemView];
         }];
     }
@@ -159,6 +168,18 @@ static CGFloat MARGIN = 15.0;
     [self addGestureRecognizer:swipeRightGestureRecognizer];
 
     _itemViews = itemViews;
+}
+
+- (void)setLeftAccessoryView:(UIView *)view {
+    if (self.leftAccessoryView) {
+        [self.leftAccessoryView removeFromSuperview];
+    }
+
+    if (view) {
+        [self addSubview:view];
+    }
+
+    _leftAccessoryView = view;
 }
 
 #pragma mark - Life Cycle
