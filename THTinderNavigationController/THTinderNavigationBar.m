@@ -30,8 +30,9 @@ static CGFloat MARGIN = 15.0;
         return;
     }
 
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger uidx, BOOL *stop) {
 
+        NSInteger idx = (NSInteger)uidx;
         CGFloat width = (WIDTH - MARGIN * 2);
         CGFloat step = (width / 2 - MARGIN) * idx;
         CGRect itemViewFrame = CGRectMake(step - MARGIN / 2, Y_POSITION, IMAGESIZE, IMAGESIZE);
@@ -39,7 +40,7 @@ static CGFloat MARGIN = 15.0;
         itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         itemView.frame = itemViewFrame;
 
-        if (self.currentPage + 1 == idx) {
+        if (self.currentPage + 1 == (idx-1)) {
             [self updateItemView:itemView withRatio:1.0];
         } else {
             [self updateItemView:itemView withRatio:0.0];
@@ -51,7 +52,7 @@ static CGFloat MARGIN = 15.0;
 }
 
 - (void)tapGestureHandle:(UITapGestureRecognizer *)tapGesture {
-    NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view];
+    NSUInteger pageIndex = [self.itemViews indexOfObject:tapGesture.view] - 1;
 
     if (self.shouldChangePage) {
         if (self.shouldChangePage(pageIndex)) {
@@ -73,7 +74,7 @@ static CGFloat MARGIN = 15.0;
                     nextPageIndex--;
                 }
             } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-                if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+                if (nextPageIndex >= 0 && nextPageIndex < (NSInteger)self.itemViews.count - 1) {
                     nextPageIndex++;
                 }
             }
@@ -86,7 +87,7 @@ static CGFloat MARGIN = 15.0;
                 nextPageIndex--;
             }
         } else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-            if (nextPageIndex >= 0 && nextPageIndex < self.itemViews.count - 1) {
+            if (nextPageIndex >= 0 && nextPageIndex < (NSInteger)self.itemViews.count - 1) {
                 nextPageIndex++;
             }
         }
@@ -111,20 +112,21 @@ static CGFloat MARGIN = 15.0;
 
     CGFloat normalWidth = CGRectGetWidth([[UIScreen mainScreen] bounds]);
 
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
+    [self.itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger uidx, BOOL *stop) {
 
+        NSInteger idx = (NSInteger)uidx;
         CGFloat width = (WIDTH - MARGIN * 2);
         CGFloat step = (width / 2 - IMAGESIZE / 2);// * idx;
 
         CGRect itemViewFrame = itemView.frame;
-        itemViewFrame.origin.x = MARGIN + step * idx - xOffset / normalWidth * step + step;
+        itemViewFrame.origin.x = MARGIN + step * (idx-1) - xOffset / normalWidth * step + step;
         itemView.frame = itemViewFrame;
 
         CGFloat ratio;
-        if (xOffset < normalWidth * idx) {
-            ratio = (xOffset - normalWidth * (idx - 1)) / normalWidth;
+        if (xOffset < normalWidth * (idx-1)) {
+            ratio = (xOffset - normalWidth * (idx - 2)) / normalWidth;
         } else {
-            ratio = 1 - ((xOffset - normalWidth * idx) / normalWidth);
+            ratio = 1 - ((xOffset - normalWidth * (idx-1)) / normalWidth);
         }
 
         [self updateItemView:itemView withRatio:ratio];
@@ -140,8 +142,10 @@ static CGFloat MARGIN = 15.0;
 
         [itemViews enumerateObjectsUsingBlock:^(UIView <THTinderNavigationBarItem> *itemView, NSUInteger idx, BOOL *stop) {
             itemView.userInteractionEnabled = YES;
-            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
-            [itemView addGestureRecognizer:tapGesture];
+            if (idx > 0) {
+                UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandle:)];
+                [itemView addGestureRecognizer:tapGesture];
+            }
             [self addSubview:itemView];
         }];
     }
